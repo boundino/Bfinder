@@ -55,15 +55,36 @@ process.Bfinder.VtxChiProbCut = cms.vdouble(0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 
 process.Bfinder.svpvDistanceCut = cms.vdouble(2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 0.0)
 process.Bfinder.doTkPreCut = cms.bool(True)
 process.Bfinder.doMuPreCut = cms.bool(True)
-process.Bfinder.MuonTriggerMatchingPath = cms.vstring(
-    "HLT_HIL3Mu0NHitQ10_L2Mu0_MAXdR3p5_M1to5_v1")
-process.Bfinder.MuonTriggerMatchingFilter = cms.vstring(
-    "hltL3f0L3Mu0L2Mu0DR3p5FilteredNHitQ10M1to5")
+process.Bfinder.MuonTriggerMatchingPath = cms.vstring("")
+process.Bfinder.MuonTriggerMatchingFilter = cms.vstring("")
 process.BfinderSequence.insert(0, process.unpackedMuons)
 process.BfinderSequence.insert(0, process.unpackedTracksAndVertices)
 # process.unpackedMuons.muonSelectors = cms.vstring() # uncomment for pp
 
 process.p = cms.Path(process.BfinderSequence)
+
+#######################################################################################################################
+# Muon filtering before running Bfinder to significantly speed up the processing
+MUONCUT = "isTrackerMuon && ((abs(eta) <= 1.0 && pt > 3.4) || (1.0 < abs(eta) <= 2.4 && pt > 1.2)) && innerTrack.hitPattern.trackerLayersWithMeasurement > 5 && innerTrack.hitPattern.pixelLayersWithMeasurement > 0"
+process.muonSelector = cms.EDFilter("PATMuonRefSelector",
+                                    src = cms.InputTag("slimmedMuons"),
+                                    cut = cms.string(MUONCUT),
+                                    filter = cms.bool(True)
+                                    )
+process.atLeastTwoMuons = cms.EDFilter("MuonRefPatCount",
+                                    src = cms.InputTag("slimmedMuons"),
+                                    cut = cms.string(MUONCUT),
+                                    minNumber = cms.uint32(2)
+                                    )
+# only process events containing at least one J/psi candidate
+process.dimuonSelection = cms.EDProducer("CandViewShallowCloneCombiner",
+                                    checkCharge = cms.bool(True),
+                                    cut = cms.string("mass > 2.7 && mass < 3.4"),
+                                    decay = cms.string("muonSelector@+ muonSelector@-")
+                                    )
+
+process.p.replace(process.BfinderSequence, process.muonSelector * process.atLeastTwoMuons * process.dimuonSelection * process.BfinderSequence)
+
 ' >> ${PATHTOTEST}/${FOREST}_wBfinder.py
 
     configfiles="${PATHTOTEST}/${FOREST}_wDfinder.py ${PATHTOTEST}/${FOREST}_wBfinder.py"
