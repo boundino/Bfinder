@@ -876,7 +876,7 @@ public:
   }
   
   //{{{ makeDNtuple
-  void makeDNtuple(int isDchannel[], int Dtypesize[], bool REAL, bool fillZeroCandEvt, bool skim, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, TrackInfoBranches *TrackInfo, DInfoBranches *DInfo, GenInfoBranches *GenInfo, TTree* ntD1, TTree* ntD2, TTree* ntD3, TTree* ntD4, TTree* ntD5, TTree* ntD6, TTree* ntD7, TTree* ntD8)
+  void makeDNtuple(int isDchannel[], int Dtypesize[], bool REAL, bool fillZeroCandEvt, bool skim, EvtInfoBranches *EvtInfo, VtxInfoBranches *VtxInfo, TrackInfoBranches *TrackInfo, DInfoBranches *DInfo, GenInfoBranches *GenInfo, TTree* ntD1, TTree* ntD2, TTree* ntD3, TTree* ntD4, TTree* ntD5, TTree* ntD6, TTree* ntD7, TTree* ntD8, TTree* ntD9)
   {
     TVector3* bP = new TVector3;
     TVector3* bVtx = new TVector3;
@@ -885,7 +885,7 @@ public:
     TVector3* D3Vec = new TVector3();
     fillTreeEvt(EvtInfo);
     bool zeroCand = true;
-    for(int t=0;t<16;t++)
+    for(int t=0;t<18;t++)
       {
         if(t%2==0)
           {
@@ -916,11 +916,12 @@ public:
             else if(t==11) ntD6->Fill();
             else if(t==13) ntD7->Fill();
             else if(t==15) ntD8->Fill();
+            else if(t==17) ntD9->Fill();
           }
       }
 
     Dsize = 0;
-    for(int t = 1; t < 16; t+=2)
+    for(int t = 1; t < 18; t+=2)
       {
         if(isDchannel[t]==1 && Dtypesize[t/2]==0)
           {
@@ -934,6 +935,7 @@ public:
                 else if(t==11) ntD6->Fill();
                 else if(t==13) ntD7->Fill();
                 else if(t==15) ntD8->Fill();
+                else if(t==17) ntD9->Fill();
               }
           }
       }
@@ -1009,7 +1011,7 @@ public:
         bGen->SetPtEtaPhiM(GenInfo->pt[j],GenInfo->eta[j],GenInfo->phi[j],GenInfo->mass[j]);
         Gy[gsize] = bGen->Rapidity();
         sigtype=0;
-        for(gt=1;gt<17;gt++)
+        for(gt=1;gt<=18;gt++)
           {
             if(isDsignalGen(gt,j,GenInfo))
               {
@@ -1104,7 +1106,7 @@ public:
                   }
               }
           }
-        if(GisSignal[gsize]==7||GisSignal[gsize]==8||GisSignal[gsize]==9||GisSignal[gsize]==10||GisSignal[gsize]==11||GisSignal[gsize]==12||GisSignal[gsize]==13||GisSignal[gsize]==14|| GSignalType[gsize]>=1 )
+        if(GisSignal[gsize]==7||GisSignal[gsize]==8||GisSignal[gsize]==9||GisSignal[gsize]==10||GisSignal[gsize]==11||GisSignal[gsize]==12||GisSignal[gsize]==13||GisSignal[gsize]==14||GisSignal[gsize]==17||GisSignal[gsize]==18|| GSignalType[gsize]>=1 )
           {
             GdecayvtxX[gsize] = GenInfo->vtxX[GenInfo->da1[j]];
             GdecayvtxY[gsize] = GenInfo->vtxY[GenInfo->da1[j]];
@@ -1148,7 +1150,7 @@ public:
               }
           }
 
-        ///here for Lc
+        ///here for Lc->pKpi
         if(GisSignal[gsize]==15||GisSignal[gsize]==16)
           {
             if(( GenInfo->nDa[DgenIndex[j]])==3)
@@ -1755,7 +1757,7 @@ public:
           }
 
       }
-    else if(DInfo->type[j]==7||DInfo->type[j]==8||DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==11||DInfo->type[j]==12||DInfo->type[j]==13||DInfo->type[j]==14) //# modify for 7,8 Ds phi kkpi channel here
+    else if(DInfo->type[j]==7||DInfo->type[j]==8||DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==11||DInfo->type[j]==12||DInfo->type[j]==13||DInfo->type[j]==14||DInfo->type[j]==17||DInfo->type[j]==18) //# modify for 7,8 Ds phi kkpi channel here
       {
         // for Ds 7,8 with tkcombineResFast (or doesn't matter), rttk1,2 are kk from phi, 3 is pi , the following info pt are all before fit value (no vertex ,mass constrain, original measured by detector 
         Dtrk1Idx[typesize] = DInfo->rftk1_index[j];
@@ -2115,31 +2117,33 @@ public:
             restk4Vec->SetPtEtaPhiM(TrackInfo->pt[DInfo->tktkRes_rftk4_index[j]],TrackInfo->eta[DInfo->tktkRes_rftk4_index[j]],TrackInfo->phi[DInfo->tktkRes_rftk4_index[j]],DInfo->tktkRes_rftk4_MassHypo[j]);
           }
 
-      } // end if Dinfo.type =7~14
+      } // end if Dinfo.type =7-14,17-18
 
     DMaxTkPt[typesize] = max(Dtrk1Pt[typesize], max(Dtrk2Pt[typesize], max(Dtrk3Pt[typesize], max(Dtrk4Pt[typesize], max(DRestrk1Pt[typesize], max(DRestrk2Pt[typesize], max(DRestrk3Pt[typesize], DRestrk4Pt[typesize])))))));
     DMinTkPt[typesize] = max(1/Dtrk1Pt[typesize], max(1/Dtrk2Pt[typesize], max(1/Dtrk3Pt[typesize], max(1/Dtrk4Pt[typesize], max(1/DRestrk1Pt[typesize], max(1/DRestrk2Pt[typesize], max(1/DRestrk3Pt[typesize], 1/DRestrk4Pt[typesize])))))));
     DMinTkPt[typesize] = 1/DMinTkPt[typesize];
    
     // fill Dgen info 
-    int DpdgId=0,RpdgId=0;
+    int DpdgId=0,RpdgId=0,SpdgId=0;
     int dGenIdxRes = -1;
     if(DInfo->type[j]==1||DInfo->type[j]==2||DInfo->type[j]==5||DInfo->type[j]==6) DpdgId=DZERO_PDGID;
     else if(DInfo->type[j]==3||DInfo->type[j]==4) DpdgId=DPLUS_PDGID;
     else if(DInfo->type[j]==7||DInfo->type[j]==8) DpdgId=DSUBS_PDGID;
     else if(DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==11||DInfo->type[j]==12) DpdgId=DSTAR_PDGID;
     else if(DInfo->type[j]==13||DInfo->type[j]==14) DpdgId=BPLUS_PDGID;
-    else if(DInfo->type[j]==15||DInfo->type[j]==16) DpdgId=LAMBDAC_PDGID;
+    else if(DInfo->type[j]==15||DInfo->type[j]==16||DInfo->type[j]==17||DInfo->type[j]==18) DpdgId=LAMBDAC_PDGID;
     if(DInfo->type[j]==7||DInfo->type[j]==8) RpdgId=PHI_PDGID;
     else if(DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==11||DInfo->type[j]==12||DInfo->type[j]==13||DInfo->type[j]==14) RpdgId=DZERO_PDGID;
-
-    else if((DInfo->type[j]==15||DInfo->type[j]==16)&& GenInfo->nDa[j]==2)
+    else if(DInfo->type[j]==17||DInfo->type[j]==18) RpdgId=KSHORT_PDGID;
+    else if((DInfo->type[j]==15||DInfo->type[j]==16)&& GenInfo->nDa[j]==2) // lambda_C->pKpi
       {
 
         if( fabs(DInfo->tktkRes_mass[j]-KSTAR892_MASS) < fabs(DInfo->tktkRes_mass[j]-DELTA1232PLUSPLUS_MASS) ) RpdgId=KSTAR892_PDGID;
         else RpdgId=DELTA1232PLUSPLUS_PDGID;
         if( fabs(DInfo->tktkRes_mass[j]-LAMBDA1520_MASS) < fabs(DInfo->tktkRes_mass[j]-KSTAR892_MASS) && fabs(DInfo->tktkRes_mass[j]-LAMBDA1520_MASS) < fabs(DInfo->tktkRes_mass[j]-DELTA1232PLUSPLUS_MASS) ) RpdgId=LAMBDA1520_PDGID;
       }
+    if (DInfo->type[j]==17||DInfo->type[j]==18) SpdgId = PROTON_PDGID;
+    else if (DInfo->type[j]==7||DInfo->type[j]==8||DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==11||DInfo->type[j]==12||DInfo->type[j]==13||DInfo->type[j]==14) SpdgId = PION_PDGID;
 
     Dgen[typesize] = 0;//gen init
     DsGen[typesize] = 0;//gen init
@@ -2346,21 +2350,26 @@ public:
                   }
               }
           }
-        else if(DInfo->type[j]==7||DInfo->type[j]==8||DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==13||DInfo->type[j]==14)
-          { //#later work here to add Ds->fp, k* modes , also add kpi swap p+K form phi + k case 
-            if(DInfo->tktkRes_rftk1_index[j]>-1 && DInfo->tktkRes_rftk2_index[j]>-1 && DInfo->rftk3_index[j]>-1) // original rftk2, should be 3 for phi kk mode
+        else if(DInfo->type[j]==7||DInfo->type[j]==8||DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==13||DInfo->type[j]==14||DInfo->type[j]==17||DInfo->type[j]==18)
+          { //#later work here to add Ds->fp, k* modes , also add kpi swap p+K form phi + k case
+            auto rftklast_index = DInfo->rftk3_index[j];  // !should be rftk3 for phi kk mode
+            if (DInfo->type[j]==17||DInfo->type[j]==18) rftklast_index = DInfo->rftk2_index[j];
+            if(DInfo->tktkRes_rftk1_index[j]>-1 && DInfo->tktkRes_rftk2_index[j]>-1 && rftklast_index>-1)
               {
                 if(TrackInfo->geninfo_index[DInfo->tktkRes_rftk1_index[j]]>-1 && 
                    TrackInfo->geninfo_index[DInfo->tktkRes_rftk2_index[j]]>-1 &&
-                   TrackInfo->geninfo_index[DInfo->rftk3_index[j]]>-1) 
+                   TrackInfo->geninfo_index[rftklast_index]>-1) 
                   {
                     Dgen[typesize] += 33;
+                    // std::cout<<GenInfo->pdgId[TrackInfo->geninfo_index[DInfo->tktkRes_rftk1_index[j]]]<<" "
+                    //          <<GenInfo->pdgId[TrackInfo->geninfo_index[DInfo->tktkRes_rftk2_index[j]]]<<" "
+                    //          <<GenInfo->pdgId[TrackInfo->geninfo_index[rftklast_index]]<<std::endl;
                     if(GenInfo->mo1[TrackInfo->geninfo_index[DInfo->tktkRes_rftk1_index[j]]]>-1 && 
                        GenInfo->mo1[TrackInfo->geninfo_index[DInfo->tktkRes_rftk1_index[j]]]==GenInfo->mo1[TrackInfo->geninfo_index[DInfo->tktkRes_rftk2_index[j]]] &&
-                       GenInfo->mo1[TrackInfo->geninfo_index[DInfo->rftk3_index[j]]]>-1)
+                       GenInfo->mo1[TrackInfo->geninfo_index[rftklast_index]]>-1)
                       {
                         if(GenInfo->mo1[GenInfo->mo1[TrackInfo->geninfo_index[DInfo->tktkRes_rftk1_index[j]]]] > -1 &&
-                           GenInfo->mo1[TrackInfo->geninfo_index[DInfo->rftk3_index[j]]] == GenInfo->mo1[GenInfo->mo1[TrackInfo->geninfo_index[DInfo->tktkRes_rftk1_index[j]]]])
+                           GenInfo->mo1[TrackInfo->geninfo_index[rftklast_index]] == GenInfo->mo1[GenInfo->mo1[TrackInfo->geninfo_index[DInfo->tktkRes_rftk1_index[j]]]])
                           {
                             Dgen[typesize] += 200;
                             dGenIdxRes = GenInfo->mo1[GenInfo->mo1[TrackInfo->geninfo_index[DInfo->tktkRes_rftk1_index[j]]]];
@@ -2373,13 +2382,13 @@ public:
                                   {
                                     Dgen[typesize] = 3333;
                                   }
-                                if((DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==3||DInfo->type[j]==14) &&
+                                if((DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==13||DInfo->type[j]==14) &&
                                    TMath::Abs(GenInfo->pdgId[TrackInfo->geninfo_index[DInfo->tktkRes_rftk2_index[j]]])==findPdgid(DInfo->tktkRes_rftk1_MassHypo[j]) && 
                                    TMath::Abs(GenInfo->pdgId[TrackInfo->geninfo_index[DInfo->tktkRes_rftk1_index[j]]])==findPdgid(DInfo->tktkRes_rftk2_MassHypo[j]))
                                   {
                                     Dgen[typesize] = 3344;
                                   }
-                                if(TMath::Abs(GenInfo->pdgId[TrackInfo->geninfo_index[DInfo->rftk3_index[j]]])==PION_PDGID)
+                                if(TMath::Abs(GenInfo->pdgId[TrackInfo->geninfo_index[rftklast_index]])==SpdgId)
                                   {
                                     Dgen[typesize]+=20000;
                                   }
@@ -2388,7 +2397,7 @@ public:
                       }
                   }
               }
-          } // end if Dinfo type 7,8 ,9,10,13,14
+          } // end if Dinfo type 7,8,9,10,13,14,17,18
         else if(DInfo->type[j]==11||DInfo->type[j]==12)
           {
             if(DInfo->tktkRes_rftk1_index[j]>-1 && DInfo->tktkRes_rftk2_index[j]>-1 && DInfo->tktkRes_rftk3_index[j]>-1 && DInfo->tktkRes_rftk4_index[j]>-1 && DInfo->rftk2_index[j]>-1)
@@ -2472,7 +2481,7 @@ public:
                   }
               }
           }
-        // Dgen for Lc
+        // Dgen for Lc->pKpi
         else if(DInfo->type[j]==15||DInfo->type[j]==16)
           {
             if(DInfo->rftk1_index[j]>-1 && DInfo->rftk2_index[j]>-1 && DInfo->rftk3_index[j]>-1)
@@ -2619,7 +2628,6 @@ public:
                               }//1=3
 
                           }//1!=D
-
                         else if(TMath::Abs(GenInfo->pdgId[GenInfo->mo1[TrackInfo->geninfo_index[DInfo->rftk2_index[j]]]])!=DpdgId)
                           {
                             if(GenInfo->mo1[TrackInfo->geninfo_index[DInfo->rftk2_index[j]]]==GenInfo->mo1[TrackInfo->geninfo_index[DInfo->rftk3_index[j]]])
@@ -3216,6 +3224,24 @@ public:
               }//number of daughter=2
 
           }//15 or 16
+      }
+    if(dmesontype==17||dmesontype==18) // only check da1 - ks, dau2=proton is that possible proton before ks?
+      {
+        if(TMath::Abs(GenInfo->pdgId[j])==LAMBDAC_PDGID&&GenInfo->nDa[j]==2&&GenInfo->da1[j]!=-1&&GenInfo->da2[j]!=-1)
+          {
+            if(TMath::Abs(GenInfo->pdgId[GenInfo->da1[j]])==KSHORT_PDGID)
+              {
+                if(GenInfo->nDa[GenInfo->da1[j]]==2&&GenInfo->da1[GenInfo->da1[j]]!=-1&&GenInfo->da2[GenInfo->da1[j]]!=-1)
+                  {
+                    if(TMath::Abs(GenInfo->pdgId[GenInfo->da1[GenInfo->da1[j]]])==PION_PDGID&&TMath::Abs(GenInfo->pdgId[GenInfo->da2[GenInfo->da1[j]]])==PION_PDGID)
+                      {
+                        if((GenInfo->pdgId[GenInfo->da2[j]]==PROTON_PDGID&&dmesontype==17) ||
+                           (GenInfo->pdgId[GenInfo->da2[j]]==(0-PROTON_PDGID)&&dmesontype==18))
+                          flag=true;                      
+                      }
+                  }
+              }
+          }
       }
 
     return flag;

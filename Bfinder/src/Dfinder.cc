@@ -135,7 +135,7 @@ private:
   DInfoBranches       DInfo;
   GenInfoBranches     GenInfo;
   CommonFuncts        Functs;
-  DntupleBranches     *Dntuple = new DntupleBranches;
+  DntupleBranches     *Dntuple;
   TTree* ntD1; 
   TTree* ntD2;
   TTree* ntD3; 
@@ -144,12 +144,14 @@ private:
   TTree* ntD6; 
   TTree* ntD7;
   TTree* ntD8;
+  TTree* ntD9;
   TTree* ntGen;
 
 };//}}}
 
 void Dfinder::beginJob()
 {//{{{
+  Dntuple = new DntupleBranches;
   root = fs->make<TTree>("root","root");
   ntD1 = fs->make<TTree>("ntDkpi","");           Dntuple->buildDBranch(ntD1, true, true);
   ntD2 = fs->make<TTree>("ntDkpipi","");         Dntuple->buildDBranch(ntD2);
@@ -158,7 +160,8 @@ void Dfinder::beginJob()
   ntD5 = fs->make<TTree>("ntDD0kpipi","");       Dntuple->buildDBranch(ntD5);
   ntD6 = fs->make<TTree>("ntDD0kpipipipi","");   Dntuple->buildDBranch(ntD6);
   ntD7 = fs->make<TTree>("ntBptoD0pi","");       Dntuple->buildDBranch(ntD7);
-  ntD8 = fs->make<TTree>("ntLambdaCtopkpi","");  Dntuple->buildDBranch(ntD8);
+  ntD8 = fs->make<TTree>("ntLctopkpi","");       Dntuple->buildDBranch(ntD8);
+  ntD9 = fs->make<TTree>("ntLctopkstoppipi",""); Dntuple->buildDBranch(ntD9);
   ntGen = fs->make<TTree>("ntGen","");           Dntuple->buildGenBranch(ntGen);
   EvtInfo.regTree(root);
   VtxInfo.regTree(root);
@@ -553,9 +556,6 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         std::pair<float, int> tk1 = std::make_pair(KAON_MASS, 1);
         std::pair<float, int> tk2 = std::make_pair(-KAON_MASS, 1);
         std::pair<float, int> tk3 = std::make_pair(PION_MASS, 0);
-        //std::pair<float, int> tk1 = std::make_pair(-PION_MASS, 1);
-        //std::pair<float, int> tk2 = std::make_pair(PION_MASS, 1);
-        //std::pair<float, int> tk3 = std::make_pair(PION_MASS, 0);
         InVec.push_back(tk1);
         InVec.push_back(tk2);
         InVec.push_back(tk3);
@@ -577,9 +577,6 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
         std::pair<float, int> tk1 = std::make_pair(-KAON_MASS, 1); // original is k+,k- pi- , true for pp, HIMB567, changed to k-k+pi- to have same order of charge relation with another Ds channel
         std::pair<float, int> tk2 = std::make_pair(KAON_MASS, 1);
         std::pair<float, int> tk3 = std::make_pair(-PION_MASS, 0);
-        // std::pair<float, int> tk1 = std::make_pair(PION_MASS, 1);
-        // std::pair<float, int> tk2 = std::make_pair(-PION_MASS, 1);
-        // std::pair<float, int> tk3 = std::make_pair(-PION_MASS, 0);
         InVec.push_back(tk1);
         InVec.push_back(tk2);
         InVec.push_back(tk3);
@@ -753,6 +750,42 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
           Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, lambdaC_mass_window, PermuVec[i], -1, -1, false, false, 16, 0);
         }    
       }    
+      //////////////////////////////////////////////////////////////////////////
+      // RECONSTRUCTION: pi+pi-(Kshort)p+ (for lambda_C)
+      //////////////////////////////////////////////////////////////////////////
+      if(Dchannel_[16] == 1){
+        std::vector< std::vector< std::pair<float, int> > > PermuVec;
+        std::vector< std::pair<float, int> > InVec;
+        std::pair<float, int> tk1 = std::make_pair(PION_MASS, 1);
+        std::pair<float, int> tk2 = std::make_pair(-PION_MASS, 1);
+        std::pair<float, int> tk3 = std::make_pair(PROTON_MASS, 0);
+        InVec.push_back(tk1);
+        InVec.push_back(tk2);
+        InVec.push_back(tk3);
+        PermuVec = GetPermu(InVec);
+        PermuVec = DelDuplicate(PermuVec);
+        double Ks_masswindows = 0.1;
+        if(tktkRes_masswindowCut_ > 0.0001 && tktkRes_masswindowCut_ < 2) { Ks_masswindows = tktkRes_masswindowCut_; }
+        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, lambdaC_mass_window, InVec, KSHORT_MASS, Ks_masswindows , false, true, 17, 1);
+      }
+      //////////////////////////////////////////////////////////////////////////
+      // RECONSTRUCTION: pi+pi-(Kshort)pbar- (for anti-lambda_C)
+      //////////////////////////////////////////////////////////////////////////
+      if(Dchannel_[17] == 1){
+        std::vector< std::vector< std::pair<float, int> > > PermuVec;
+        std::vector< std::pair<float, int> > InVec;
+        std::pair<float, int> tk1 = std::make_pair(-PION_MASS, 1);
+        std::pair<float, int> tk2 = std::make_pair(PION_MASS, 1);
+        std::pair<float, int> tk3 = std::make_pair(-PROTON_MASS, 0);
+        InVec.push_back(tk1);
+        InVec.push_back(tk2);
+        InVec.push_back(tk3);
+        PermuVec = GetPermu(InVec);
+        PermuVec = DelDuplicate(PermuVec);
+        double Ks_masswindows = 0.1;
+        if(tktkRes_masswindowCut_ > 0.0001 && tktkRes_masswindowCut_ < 2) { Ks_masswindows = tktkRes_masswindowCut_; }
+        Dfinder::BranchOutNTk( DInfo, input_tracks, thePrimaryV, isNeededTrackIdx, D_counter, lambdaC_mass_window, InVec, KSHORT_MASS, Ks_masswindows, false, true, 18, 1);
+      }
 
 
       if(printInfo_){
@@ -970,7 +1003,7 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             abs(it_gen->pdgId()) == 4122 ||//lamadac
             //abs(it_gen->pdgId()) == 311 ||//K0
             // abs(it_gen->pdgId()) == 321 ||//K+
-            //abs(it_gen->pdgId()) == 310 ||//KS
+            // abs(it_gen->pdgId()) == 310 ||//KS
             //abs(it_gen->pdgId()) == 313 ||//K*0(892)
             //abs(it_gen->pdgId()) == 323 ||//K*+-(892)
             //abs(it_gen->pdgId()) == 333 ||//phi(1020)  //# might need to add this
@@ -1093,13 +1126,13 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   //Made a Dntuple on the fly   
   if(makeDntuple_){
-    int isDchannel[16];
-    for(int ichannel=0; ichannel<16; ichannel++)
+    int isDchannel[18];
+    for(int ichannel=0; ichannel<18; ichannel++)
       { isDchannel[ichannel] = Dchannel_[ichannel]; }
     bool REAL = iEvent.isRealData();
     bool fillZeroCandEvt = true;
-    int Dtypesize[8]={0,0,0,0,0,0,0,0};
-    Dntuple->makeDNtuple(isDchannel, Dtypesize, REAL, fillZeroCandEvt, doDntupleSkim_, &EvtInfo, &VtxInfo, &TrackInfo, &DInfo, &GenInfo, ntD1, ntD2, ntD3, ntD4, ntD5, ntD6, ntD7, ntD8);
+    int Dtypesize[9]={0,0,0,0,0,0,0,0,0};
+    Dntuple->makeDNtuple(isDchannel, Dtypesize, REAL, fillZeroCandEvt, doDntupleSkim_, &EvtInfo, &VtxInfo, &TrackInfo, &DInfo, &GenInfo, ntD1, ntD2, ntD3, ntD4, ntD5, ntD6, ntD7, ntD8, ntD9);
     if(!REAL) Dntuple->fillDGenTree(ntGen, &GenInfo);
   }
 
