@@ -160,8 +160,8 @@ void Dfinder::beginJob()
   ntD5 = fs->make<TTree>("ntDD0kpipi","");       Dntuple->buildDBranch(ntD5);
   ntD6 = fs->make<TTree>("ntDD0kpipipipi","");   Dntuple->buildDBranch(ntD6);
   ntD7 = fs->make<TTree>("ntBptoD0pi","");       Dntuple->buildDBranch(ntD7);
-  ntD8 = fs->make<TTree>("ntLambdaCtopkpi","");  Dntuple->buildDBranch(ntD8);
-  ntD9 = fs->make<TTree>("ntLctopkstopipi","");  Dntuple->buildDBranch(ntD9);
+  ntD8 = fs->make<TTree>("ntLctopkpi","");       Dntuple->buildDBranch(ntD8);
+  ntD9 = fs->make<TTree>("ntLctopkstoppipi",""); Dntuple->buildDBranch(ntD9);
   ntGen = fs->make<TTree>("ntGen","");           Dntuple->buildGenBranch(ntGen);
   EvtInfo.regTree(root);
   VtxInfo.regTree(root);
