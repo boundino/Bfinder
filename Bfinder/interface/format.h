@@ -83,6 +83,7 @@
 #define MUON_PDGID 13
 #define PION_PDGID 211
 #define KAON_PDGID 321
+#define KSHORT_PDGID 310
 #define KSTAR_PDGID 313
 #define PHI_PDGID 333
 #define JPSI_PDGID 443
