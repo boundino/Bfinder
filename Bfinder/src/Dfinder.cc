@@ -135,7 +135,7 @@ private:
   DInfoBranches       DInfo;
   GenInfoBranches     GenInfo;
   CommonFuncts        Functs;
-  DntupleBranches     *Dntuple = new DntupleBranches;
+  DntupleBranches     *Dntuple;
   TTree* ntD1; 
   TTree* ntD2;
   TTree* ntD3; 
@@ -151,6 +151,7 @@ private:
 
 void Dfinder::beginJob()
 {//{{{
+  Dntuple = new DntupleBranches;
   root = fs->make<TTree>("root","root");
   ntD1 = fs->make<TTree>("ntDkpi","");           Dntuple->buildDBranch(ntD1, true, true);
   ntD2 = fs->make<TTree>("ntDkpipi","");         Dntuple->buildDBranch(ntD2);
