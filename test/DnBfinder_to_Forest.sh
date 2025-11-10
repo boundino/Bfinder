@@ -1,12 +1,13 @@
 #!/bin/bash
 
 PATHTOTEST=$CMSSW_BASE/src/HeavyIonsAnalysis/Configuration/test/
-FORESTS=(forest_miniAOD_run3_DATA forest_miniAOD_run3_UPC_DATA forest_miniAOD_run3_MC)
-RUNONMC=(False False True)
+FORESTS=(forest_miniAOD_run3_DATA forest_miniAOD_run3_UPC_DATA forest_miniAOD_run3_MC forest_miniAOD_run3_UPC_23rereco_DATA)
+RUNONMC=(False False True False)
 INFILES=(
     "/store/hidata/HIRun2024B/HIPhysicsRawPrime0/MINIAOD/PromptReco-v1/000/388/350/00000/60ad5c5a-8835-49c9-a031-77671c00b56e.root"
     "/store/hidata/HIRun2024B/HIForward0/MINIAOD/PromptReco-v2/000/388/468/00000/062e9301-3fac-495a-849c-fe6233892da1.root"
     "root://eoscms.cern.ch//store/group/phys_heavyions/jviinika/PythiaHydjetRun3_5p36TeV_dijet_ptHat15_100kEvents_miniAOD_2023_08_30/PythiaHydjetDijetRun3/PythiaHydjetRun3_dijet_ptHat15_5p36TeV_miniAOD/230830_165931/0000/pythiaHydjet_miniAOD_11.root"
+    "/store/hidata/HIRun2023A/HIForward0/MINIAOD/14Feb2025-v1/2530000/bc64b56f-9175-43e4-94b0-7a075787bf65.root"
 )
 MINIMUMTREES=0
 
@@ -29,8 +30,10 @@ process.Dfinder.tkPtCut = cms.double(0.5) # before fit
 process.Dfinder.tkEtaCut = cms.double(2.4) # before fit
 process.Dfinder.Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 setCutForAllChannelsDfinder(process, dPtCut = 1, VtxChiProbCut = 0.05, svpvDistanceCut = 2.5, alphaCut = 999.)
-
+# process.Dfinder.printInfo = cms.bool(False)
 process.dfinder = cms.Path(process.DfinderSequence)
+
+# process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
 ' >> ${PATHTOTEST}/${FOREST}_wDfinder.py
 
@@ -82,7 +85,7 @@ process.dimuonSelection = cms.EDProducer("CandViewShallowCloneCombiner",
                                     cut = cms.string("mass > 2.7 && mass < 3.4"),
                                     decay = cms.string("muonSelector@+ muonSelector@-")
                                     )
-
+# process.Bfinder.printInfo = cms.bool(False)
 process.p.replace(process.BfinderSequence, process.muonSelector * process.atLeastTwoMuons * process.dimuonSelection * process.BfinderSequence)
 
 ' >> ${PATHTOTEST}/${FOREST}_wBfinder.py
