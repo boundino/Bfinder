@@ -1,12 +1,12 @@
 To setup Bfinder
 =====
 
-2024 pp and PbPb data/MC from miniAOD
+2024 pp and PbPb data/MC and Rereco of 2023 UPC PbPb data/MC from MINIAOD
 Ref: https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiForestSetup
 
 ```
-cmsrel CMSSW_14_1_4_patch5 #
-cd CMSSW_14_1_4_patch5/src
+cmsrel CMSSW_14_1_9 #
+cd CMSSW_14_1_9/src
 cmsenv
 git cms-merge-topic CmsHI:forest_CMSSW_14_1_X
 scram b -j4
