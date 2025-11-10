@@ -25,10 +25,10 @@ TrkChi2Label = "packedPFCandidateTrackChi2"
 GenLabel = "prunedGenParticles"
 from Bfinder.finderMaker.finderMaker_75X_cff import finderMaker_75X,setCutForAllChannelsDfinder
 finderMaker_75X(process, runOnMC, VtxLabel, TrkLabel, TrkChi2Label, GenLabel)
-process.Dfinder.tkPtCut = cms.double(0.05) # before fit
+process.Dfinder.tkPtCut = cms.double(0.5) # before fit
 process.Dfinder.tkEtaCut = cms.double(2.4) # before fit
-process.Dfinder.Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-setCutForAllChannelsDfinder(process, dPtCut = 0, VtxChiProbCut = 0.05, svpvDistanceCut = 2.5, alphaCut = 0.2)
+process.Dfinder.Dchannel = cms.vint32(1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+setCutForAllChannelsDfinder(process, dPtCut = 1, VtxChiProbCut = 0.05, svpvDistanceCut = 2.5, alphaCut = 999.)
 
 process.dfinder = cms.Path(process.DfinderSequence)
 
