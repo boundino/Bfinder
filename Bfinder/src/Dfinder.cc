@@ -87,7 +87,7 @@ private:
   }
   // ----------member data ---------------------------
   edm::ESHandle<MagneticField> bField;
-  edm::ESGetToken<MagneticField, IdealMagneticFieldRecord> idealMagneticFieldRecordToken_;
+  // edm::ESGetToken<MagneticField, IdealMagneticFieldRecord> idealMagneticFieldRecordToken_;
   edm::ParameterSet theConfig;
 
   std::vector<int> Dchannel_;
@@ -174,8 +174,7 @@ Dfinder::Dfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
 {//{{{
   //now do what ever initialization is needed
 
-  idealMagneticFieldRecordToken_ = esConsumes();
-  // idealMagneticFieldRecordToken_ = esConsumes(edm::ESInputTag("")); // ParabolicMf
+  // idealMagneticFieldRecordToken_ = esConsumes();
 
   Dchannel_ = iConfig.getParameter<std::vector<int> >("Dchannel");
   genLabel_ = consumes< std::vector<reco::GenParticle> >(iConfig.getParameter<edm::InputTag>("GenLabel"));
@@ -258,8 +257,9 @@ void Dfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //std::cout << "*************************\nReconstructing event number: " << iEvent.id() << "\n";
   using namespace edm;
   using namespace reco;
-  //ESHandle<MagneticField> bField;
-  bField = iSetup.getHandle(idealMagneticFieldRecordToken_);
+
+  // bField = iSetup.getHandle(idealMagneticFieldRecordToken_);
+  iSetup.get<IdealMagneticFieldRecord>().get(bField);
 
   // Change used muon and track collections
   auto tks = iEvent.getHandle( trackLabel_ ); // edm::Handle< edm::View<pat::PackedCandidate> >

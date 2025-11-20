@@ -77,7 +77,7 @@ private:
   
   // ----------member data ---------------------------
   edm::ESHandle<MagneticField> bField;
-  edm::ESGetToken<MagneticField, IdealMagneticFieldRecord> idealMagneticFieldRecordToken_;
+  // edm::ESGetToken<MagneticField, IdealMagneticFieldRecord> idealMagneticFieldRecordToken_;
   edm::ParameterSet theConfig;
 
   bool detailMode_;
@@ -169,7 +169,7 @@ Bfinder::Bfinder(const edm::ParameterSet& iConfig):theConfig(iConfig)
   detailMode_ = iConfig.getParameter<bool>("detailMode");
   dropUnusedTracks_ = iConfig.getParameter<bool>("dropUnusedTracks");
 
-  idealMagneticFieldRecordToken_ = esConsumes();
+  // idealMagneticFieldRecordToken_ = esConsumes();
 
   //TriggersForMatching_= iConfig.getUntrackedParameter<std::vector<std::string> >("TriggersForMatching");
   //hltLabel_           = iConfig.getParameter<edm::InputTag>("HLTLabel");
@@ -242,8 +242,8 @@ void Bfinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //std::cout << "*************************\nReconstructing event number: " << iEvent.id() << "\n";
   using namespace edm;
   using namespace reco;
-  //ESHandle<MagneticField> bField;
-  bField = iSetup.getHandle(idealMagneticFieldRecordToken_);
+  iSetup.get<IdealMagneticFieldRecord>().get(bField);
+  // bField = iSetup.getHandle(idealMagneticFieldRecordToken_);
 
   // Change used muon and track collections
   auto muons = iEvent.getHandle(muonLabel_); // edm::Handle< std::vector<pat::Muon> >
