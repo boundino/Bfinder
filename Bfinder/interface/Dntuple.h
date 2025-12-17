@@ -940,6 +940,12 @@ public:
           }
       }
 
+    delete bP;
+    delete bVtx;
+    delete b4P;
+    delete boost;
+    delete D3Vec;
+
   }//}}}
   
   void fillDGenTree(TTree* ntGen, GenInfoBranches *GenInfo, bool gskim=true)
@@ -1122,7 +1128,7 @@ public:
             Gtk2phi[gsize] = GenInfo->phi[GenInfo->da2[j]];
             Gtk2pdgId[gsize] = GenInfo->pdgId[GenInfo->da2[j]];
             bGen->SetPtEtaPhiM(GenInfo->pt[GenInfo->da2[j]],GenInfo->eta[GenInfo->da2[j]],GenInfo->phi[GenInfo->da2[j]],GenInfo->mass[GenInfo->da2[j]]);
-            Gtk1y[gsize] = bGen->Rapidity();
+            Gtk2y[gsize] = bGen->Rapidity();
             GRestk1pt[gsize] = GenInfo->pt[GenInfo->da1[GenInfo->da1[j]]];
             GRestk1eta[gsize] = GenInfo->eta[GenInfo->da1[GenInfo->da1[j]]];
             GRestk1phi[gsize] = GenInfo->phi[GenInfo->da1[GenInfo->da1[j]]];
@@ -1205,6 +1211,7 @@ public:
         gsize++;
       }
     ntGen->Fill();
+    delete bGen;
   }
 
   double findMass(int particlePdgId)
@@ -1756,6 +1763,9 @@ public:
             tk4Vec->SetPtEtaPhiM(TrackInfo->pt[DInfo->rftk4_index[j]],TrackInfo->eta[DInfo->rftk4_index[j]],TrackInfo->phi[DInfo->rftk4_index[j]],DInfo->rftk4_MassHypo[j]);
           }
 
+        delete Sumboost;
+        delete Sum3Vec;
+
       }
     else if(DInfo->type[j]==7||DInfo->type[j]==8||DInfo->type[j]==9||DInfo->type[j]==10||DInfo->type[j]==11||DInfo->type[j]==12||DInfo->type[j]==13||DInfo->type[j]==14||DInfo->type[j]==17||DInfo->type[j]==18) //# modify for 7,8 Ds phi kkpi channel here
       {
@@ -2021,6 +2031,9 @@ public:
         tk1Vec->SetPtEtaPhiM(TrackInfo->pt[DInfo->rftk2_index[j]],TrackInfo->eta[DInfo->rftk2_index[j]],TrackInfo->phi[DInfo->rftk2_index[j]],DInfo->rftk2_MassHypo[j]);
         DtktkRes_angleToTrk1[typesize] = tktkRes4Vec->Angle(tk1Vec->Vect());
 
+        delete DisSvResVtx;
+        delete tktkRes4Vec;
+
         DtktkRes_ptAsymToTrk1[typesize] = (DInfo->tktkRes_pt[j]-TrackInfo->pt[DInfo->rftk2_index[j]])/(DInfo->tktkRes_pt[j]+TrackInfo->pt[DInfo->rftk2_index[j]]);
         DtktkRes_unfitter_ptAsymToTrk1[typesize] = (DInfo->tktkRes_unfitted_pt[j]-TrackInfo->pt[DInfo->rftk2_index[j]])/(DInfo->tktkRes_unfitted_pt[j]+TrackInfo->pt[DInfo->rftk2_index[j]]);
 
@@ -2116,6 +2129,9 @@ public:
             DRestrk4thetastar_uf[typesize] = restk4Vec->Angle(*Sum3Vec);
             restk4Vec->SetPtEtaPhiM(TrackInfo->pt[DInfo->tktkRes_rftk4_index[j]],TrackInfo->eta[DInfo->tktkRes_rftk4_index[j]],TrackInfo->phi[DInfo->tktkRes_rftk4_index[j]],DInfo->tktkRes_rftk4_MassHypo[j]);
           }
+
+        delete Sumboost;
+        delete Sum3Vec;
 
       } // end if Dinfo.type =7-14,17-18
 
@@ -2873,6 +2889,18 @@ public:
               }
           }
       }//if(!real)
+
+    delete tk1Vec;
+    delete tk2Vec;
+    delete tk3Vec;
+    delete tk4Vec;
+    delete restk1Vec;
+    delete restk2Vec;
+    delete restk3Vec;
+    delete restk4Vec;
+    delete resSumVec;
+    delete SumVec;
+
   }//fillDtree
 
   int getrftkpdgId(int rftk_index, TrackInfoBranches *TrackInfo, GenInfoBranches *GenInfo) {
